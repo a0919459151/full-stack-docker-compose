@@ -1,11 +1,17 @@
+# 使用 Node.js 镜像进行构建
 FROM node:lts-alpine as build-stage
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
 
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# 设置工作目录
+WORKDIR /app
+
+# 复制 package.json 和 package-lock.json
+COPY package*.json ./
+
+# 安装依赖
+RUN npm ci
+
+# 复制所有源代码
+COPY . .
+
+# 构建前端应用
+RUN npm run build
